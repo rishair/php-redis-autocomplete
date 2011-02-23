@@ -10,9 +10,12 @@ class RedisAutocomplete {
 		'the' => 1,
 	);
 	
+	private $redis;
 	private $bin;
 	
-	public function __construct($bin) {
+	public function __construct($redis, $bin) {
+		$this->redis = $redis;
+		
 		if (func_num_args() > 1) 	$bin = func_get_args();
 		if (is_array($bin)) 		$bin = implode(':', $bin);
 		$this->bin = $this->Normalize($bin);
@@ -75,14 +78,14 @@ class RedisAutocomplete {
 		
 		foreach ($prefixes as $prefix) {
 			// Add the prefix and its identifier to the set
-			redis()->zadd($this->PrefixKey($prefix), $score, $id);
+			$this->redis->zadd($this->PrefixKey($prefix), $score, $id);
 			
 			// Store the phrase that is associated with the ID in a hash
-			redis()->hset($this->MetaKey('ids'), $id, $normalized);
+			$this->redis->hset($this->MetaKey('ids'), $id, $normalized);
 			
 			// If data is passed in with it, then store the data as well
 			if ($data)
-				redis()->hset($this->MetaKey('data'), $id, json_encode($data));
+				$this->redis->hset($this->MetaKey('data'), $id, json_encode($data));
 		}
 		
 	}
@@ -108,20 +111,20 @@ class RedisAutocomplete {
 		}
 		
 		// Check the cache to see if we stored the intersection already
-		$range = redis()->zrevrange($key, 0, $count);
+		$range = $this->redis->zrevrange($key, 0, $count);
 		
 		if (!$range) {
 			
 			// Find the intersection of all the results and store it in a separate key
-			call_user_func_array(array(redis(), 'zinterstore'), array_merge(array(
+			call_user_func_array(array($this->redis, 'zinterstore'), array_merge(array(
 				$key, count($words),
 			), $words));
 			
-			$range = redis()->zrevrange($key, 0, $count);
+			$range = $this->redis->zrevrange($key, 0, $count);
 		}
 		
 		
-		redis()->expire($key, MINUTE * 10);
+		$this->redis->expire($key, MINUTE * 10);
 		
 		return $range;
 	}
