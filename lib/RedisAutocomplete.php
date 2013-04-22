@@ -1,8 +1,9 @@
-<?
+<?php
 
 class RedisAutocomplete {
 
 	const MIN_LETTERS = 2;
+	const MINUTE = 60;
 	
 	public static $EXCLUDE = array(
 		'and' => 1,
@@ -202,12 +203,10 @@ class RedisAutocomplete {
 			$objects = json_decode($objects, true);
 		}
 		
-		$this->redis->expire($key, MINUTE * 10);
+		$this->redis->expire($key, self::MINUTE * 10);
 		
 		return $objects;
 	}
 
 
 }
-
-?>

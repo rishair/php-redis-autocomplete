@@ -1,0 +1,16 @@
+{
+    "name": "rishair/php-redis-autocomplete",
+    "type": "library",
+    "description": "Autocomplete implementation using PHP and Redis",
+    "homepage": "https://github.com/rishair/php-redis-autocomplete",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Rishi Ishairzay",
+            "email": "windowasher@gmail.com"
+        }
+    ],
+    "autoload": {
+        "classmap": ["lib/"]
+    }
+}
