@@ -1,4 +1,4 @@
-<?
+<?php
 
 class RedisAutocomplete {
 
@@ -209,5 +209,3 @@ class RedisAutocomplete {
 
 
 }
-
-?>
